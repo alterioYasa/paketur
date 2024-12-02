@@ -13,6 +13,26 @@ class Company extends Model
 
     protected $fillable = ['name', 'email', 'phone_number'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($company) {
+            User::create([
+                'name' => "Manager",
+                'email' => 'manager_' . $company->id . '@example.org',
+                'password' => bcrypt('password123'),
+                'role' => 'Manager',
+                'company_id' => $company->id,
+            ]);
+        });
+
+        static::deleting(function ($model) {
+            $model->users()->delete();
+            $model->employees()->delete();
+        });
+    }
+
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'company_id', 'id');

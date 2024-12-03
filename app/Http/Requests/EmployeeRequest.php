@@ -8,7 +8,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 
-class CompanyRequest extends FormRequest
+class EmployeeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,11 +25,20 @@ class CompanyRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => $this->isMethod('POST') ?  'required|unique:companies,name' : ['required', Rule::unique('companies', 'name')->ignore($this->route('id'))],
-            'email' => $this->isMethod('POST') ? 'required|email|unique:companies,email' : ['required', Rule::unique('companies', 'email')->ignore($this->route('id'))],
-            'phone_number' => $this->isMethod('POST') ? 'required|unique:companies,phone_number' : ['required', Rule::unique('companies', 'phone_number')->ignore($this->route('id'))],
+        $rule = [
+            'name' => 'required',
+            'phone_number' => $this->isMethod('POST') ? 'required|unique:employees,phone_number' : [
+                'required',
+                Rule::unique('employees', 'phone_number')->ignore($this->route('userId'), 'user_id')
+            ],
+            'address' => 'required',
         ];
+
+        if ($this->isMethod('POST')) {
+            $rule['email'] = 'required|unique:users,email';
+        }
+
+        return $rule;
     }
 
     /**

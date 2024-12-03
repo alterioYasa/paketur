@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Company;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CompanySeeder extends Seeder
 {
@@ -13,6 +15,12 @@ class CompanySeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
+
+        DB::table('companies')->truncate();
+
+        Schema::enableForeignKeyConstraints();
+
         Company::create([
             'name' => 'Company A',
             'email' => 'contact@companya.com',
